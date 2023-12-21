@@ -45,7 +45,7 @@ npm run build
 ```
 
 You can run this app in 2 ways:
-1) From a cron job (or other scheduler) to polls and upload at a specific interval.
+1) From a cron job (or other scheduler) to poll and upload at a specific interval.
 2) A Standalone NodeJS App which polls and uploads at a specific interval.
 
 ### Running as a CRON Job
@@ -118,10 +118,10 @@ The following configuration variables can be set in the `.env` file:
 |POLL_FREQUENCY|Integer|The number of minutes to poll and upload data if the script is run as a standalone NodeJS App.
 
 ## Command Line Arguments
-The following command line arguments are excepted:
+The following command line arguments are accepted:
 |Argument|Type|Description|
 |---|---|---|
-|--standalone or --s|Boolean|Set to `true` to run in standalone mode.  With this mode the application controls the polling of data.  This is not a recommended solution as the application is always running.  Any other value than `true` is classed as a `false` value.|
+|--standalone or --s|Boolean|Set to `true` to run in standalone mode.  With this mode the application controls the polling of data.  This is not a recommended solution as the application is always running.  Any other value than `true` is classed as a `false` value.  You can ommit this argument if not in standalone mode.|
 
 ## Proposed Future Enhancements
 The following are some update that I may or may not add going forward:
