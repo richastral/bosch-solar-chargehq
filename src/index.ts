@@ -2,10 +2,39 @@ import { GridVoltageAndCurrent, StringVoltageAndCurrent } from "./model/bosch.mo
 import { SiteMeterPush } from "./model/site-meter.model";
 import { BoschAPI } from "./util/bosch.api";
 import { ChargeHQAPI } from "./util/chargehq.api";
+import * as yargs from 'yargs'
 require('dotenv').config()
 
 console.log('ChargeHQ Bosch Inverter Tool');
 console.log('----------------------------');
+
+interface Args {
+    standalone?: boolean
+}
+
+let args = yargs
+    .usage('$0 <cmd> [args]')
+    .option('standalone', {
+        alias: 's',
+        description: "Set to true if the tool should poll for data in a standalone manner (not recommended)",
+        type: "boolean"
+    }).argv;
+
+const comArgs = args as Args;
+if (comArgs.standalone) {
+    console.log('Running in Standalone Mode');
+
+    const interval = parseInt(process.env.POLL_FREQUENCY as string);
+    console.log(`Polling every ${interval} minutes...`);
+    setInterval(function() {
+        main()
+            .then(v => console.log(`Pausing for the next ${interval} minutes reading and upload...`))
+            .catch(err => console.error(err));
+    }, interval * 60 * 1000);
+} else {
+    console.log('Running in Single Mode');
+    main();
+}
 
 async function main() {
     const boschAPI = new BoschAPI(process.env.BOSCH_IP_ADDRESS as string);
@@ -18,8 +47,6 @@ async function main() {
     console.log('Serial Number: ', inverterInfo.serialNumber);
     console.log('Nominal Power (KW/h): ', inverterInfo.nominalPower);
     console.log('Number of DC Strings: ', inverterInfo.numberOfStringInputs);
-
-    const timeConfig = await boschAPI.getTimeConfig();
 
     const networkInfo = await boschAPI.getNetworkInfo();
     console.log('IP Address: ', networkInfo.ipAddress);
@@ -46,54 +73,6 @@ async function main() {
     } {
         console.log('[SUCCESS] Successfully sent values to ChargeHQ');
     }
-
-    // const nowTimeStamp = timeConfig.utcTimestamp;
-
-    // const currentDate = new Date((nowTimeStamp + (timeConfig.utcOffset * 60)) * 1000); // Use Offset from API
-
-    // /**
-    //  * This is only for testing at night when no data is available.
-    //  */
-    // currentDate.setHours(currentDate.getHours() - 24);
-    // console.log('Current Time (-24h Test): ', currentDate);
-    // /**
-    //  * End
-    //  */
-
-    // // Start date
-    // const startDate = new Date(currentDate.getTime());
-    // setTimeValues(startDate, 0, 0, 0, 0);
-    // // startDate.setHours(0);
-    // // startDate.setMinutes(0);
-    // // startDate.setSeconds(0);
-    // // startDate.setMilliseconds(0);
-    
-    // const toDate = new Date(currentDate.getTime());
-    // setTimeValues(toDate, 23, 59, 59, 999);
-    // // toDate.setHours(23);
-    // // toDate.setMinutes(59);
-    // // toDate.setSeconds(59);
-    // // toDate.setMilliseconds(999);
-    
-    // console.log('Start:');
-    // console.log(startDate);
-    // console.log(startDate.getTime());
-    
-    // console.log('End:');
-    // console.log(toDate);
-    // console.log(toDate.getTime());
-
-    // const acLogData = await boschAPI.getLogAcPower(startDate.getTime(), toDate.getTime());
-    // console.log('Log Data (AC) Count: ', acLogData.array.length);
-    // console.log('Log Data (AC): ', acLogData);
-}
-main();
-
-function setTimeValues(sourceDate: Date, hours: number, minutes: number, seconds: number, millis: number): void {
-    sourceDate.setHours(hours);
-    sourceDate.setMinutes(minutes);
-    sourceDate.setSeconds(seconds);
-    sourceDate.setMilliseconds(millis);
 }
 
 function calculateCurrentKw(stringData: StringVoltageAndCurrent): number {
@@ -141,8 +120,4 @@ function calculateGridFeedIn(gridData: GridVoltageAndCurrent) {
 // Function here only to make it easy to do the divisor.
 function kwToWatt(kw: number): number {
     return kw / 1000;
-}
-
-async function sendSolarData(): Promise<void> {
-
 }
