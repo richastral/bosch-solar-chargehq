@@ -1,17 +1,17 @@
 # ChargeHQ Bosch Inverter Tool
-A simple NodeJS script take solar data from a local Bosch Inverter and push it to the ChargeHQ API.
+A simple NodeJS script take solar data from a local Bosch Inverter and push it to the ChargeHQ APP via the Push API.
 
 The Bosch Inverters, at least the one I have do not have good connectivity and therefore the ChargeHQ app cannot support them.
 
-This script is designed to run on your local network and retrieve the necessary solar data and upload to ChargeHQ, allowing you to configure you EV to charge at peak times.
+This script is designed to run on your local network and retrieve the necessary solar data and upload to the ChargeHQ App, allowing you to configure your EV to charge at peak sunlight times.
 
 ## Prerequisites
  - A Bosch Inverter connected to your local network.  This script has been tested on the **BPT-S 4.6** with Firmware Version **901_D_06_01**, it might not be supported on other versions, please get in touch if it does not and I'll see if I can add support.
- - NodeJS - This application is created with NodeJS and therefore requires to be run on a system where this can be installed.
- - A PC, Server, Raspberry Pi or other computer which can run the above NodeJS, this will have to be powered up and connected to the internet and network 24/7.
+ - NodeJS - This application is created with NodeJS and therefore is required to be run on a system where this can be installed.
+ - A PC, Server, Raspberry Pi or other system which can run the above NodeJS, this will have to be powered up and connected to the internet and network 24/7.
 
 ## Installation
-Clone this repository to a folder on you drive.  I will add a complete release bundle soon, but for now you have to build it yourself, but it is easy:
+Clone this repository to a folder on your drive.  I will add a complete release bundle soon, but for now you have to build it yourself, it is easy:
 
 Clone Repository:
 ```
@@ -24,7 +24,7 @@ cd [Installation Path]/bosch-solar-chargehq
 npm install
 ```
 
-Update the `.env` File:
+Create the `.env` File:
 ```
 cp .env.example .env
 ```
@@ -85,7 +85,7 @@ Running as standalone means that the script is always running.  Where this can b
 
 However, if you wish to run in this mode you can do the following:
 
-Ensure the `.env` configuration has the correct polling frequency:
+Ensure the `.env` configuration has the correct polling frequency in minutes:
 ```
 POLL_FREQUENCY=15
 ```
@@ -101,12 +101,11 @@ node .\dist\index.js --s=true
 
 ## ChargeHQ API Key
 You can get a free API Key for ChargeHQ by doing the following:
- - Download the App on your phone or tablet, or log in via a web browser: https://app.chargehq.net/ (Save your username and password securely)
- - In the Web App https://app.chargehq.net/ (Note: This in not available in the smart device apps as yet):
-    - Log in using your credentials above.
+ - Download the App on your phone, tablet, or browser and create an account.
+ - Log in via a web browser: https://app.chargehq.net/ (this step can only be done in the browserver version):
     - Navigate to My Equipment -> Solar / Battery Equipment -> Push API.
     - Copy your API Key which is generated.
- update the `.env` file with your API Key.
+ - Update the `.env` file with your API Key.
 
 ## Environment Configurations
 The following configuration variables can be set in the `.env` file:
